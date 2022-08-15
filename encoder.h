@@ -33,7 +33,7 @@ public:
 
     // ofstream outputStream;
     FILE *outputFile;
-    float *mbQp;  // stor qp value for each macroBlock
+    float *mbQp;  // store qp value for each macroBlock
 };
 
 #endif

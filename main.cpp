@@ -47,5 +47,20 @@ int main(int argc, char **argv) {
         av_frame_unref(decoder.frame);
     }
 
+    // Flush decoder to receive buffered frames(e.g. B frames)
+    if (frameCount < decoder.stream->nb_frames) {
+        avcodec_send_packet(decoder.videoCodecContext, nullptr);
+        while (avcodec_receive_frame(decoder.videoCodecContext, decoder.frame) != AVERROR_EOF) {
+            av_log(nullptr, AV_LOG_INFO, "Receive and re-encode frame %d with pts %ld. ", ++frameCount,decoder.frame->pts);
+            if (encoder.encode(decoder.frame->data, decoder.frame->linesize)) {
+                av_log(nullptr, AV_LOG_INFO, "Success.\n");
+            } else {
+                av_log(nullptr, AV_LOG_INFO, "Failed.\n");
+            }
+
+            av_frame_unref(decoder.frame);
+        }
+    }
+
     return 0;
 }
