@@ -10,6 +10,7 @@ This library is inspired by [h264-roi](https://github.com/ChaoticEnigma/h264-roi
 - Use latest version of FFmpeg and x264, which means no deprecated API is used
 - Input mp4 for output mp4 instead of h264 for h264
 - Fix the bug that will lead to frame loss in [h264-roi](https://github.com/ChaoticEnigma/h264-roi)
+- Fix the bug that relative path will be parsed as absolute path in [h264-roi](https://github.com/ChaoticEnigma/h264-roi)
 
 [h264-roi](https://github.com/ChaoticEnigma/h264-roi) is a brilliant work, but the author stopped maintenance long time ago. So this repository is given birth to.
 
