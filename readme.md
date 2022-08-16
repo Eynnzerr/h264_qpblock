@@ -25,7 +25,7 @@ This library is inspired by [h264-roi](https://github.com/ChaoticEnigma/h264-roi
 ```shell
 mkdir build
 ```
-3. use `cmake` to compile the project:
+3. use `cmake` to compile the project. **Don't forget to edit CMakeLists.txt to change include & link path to your own path**:
 ```shell
 cmake ..
 make
@@ -46,4 +46,5 @@ Note that regions are denoted by: top_left_x,top_left_y,bottom_right_x,bottom_ri
 Values of QP range from 0 to 51 as usual.
 
 ### Other words
-This is my first time learning and trying C++. Forgive me for any unreasonable code if I've made ;)
+- You can disable log output by setting log level in function `main`.
+- This is my first time learning and trying C++. Forgive me for any unreasonable code if I've made ;)
