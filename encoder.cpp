@@ -38,7 +38,7 @@ X264Encoder::X264Encoder(char *outputPath, int inWidth, int inHeight, int fps) {
     if (!x264Param) delete x264Param;
     x264Param = new x264_param_t;
     int ret = x264_param_default_preset(x264Param, "fast", "zerolatency");
-    if(ret < 0) {
+    if (ret < 0) {
         av_log(nullptr, AV_LOG_ERROR, "Failed to set preset parameter!\n");
     }
     x264Param->i_threads = 1;
@@ -46,6 +46,13 @@ X264Encoder::X264Encoder(char *outputPath, int inWidth, int inHeight, int fps) {
     x264Param->i_height = height;
     x264Param->i_fps_num = fps;
     x264Param->i_fps_den = 1;
+    x264Param->i_bframe = 3;
+    x264Param->i_bframe_pyramid = 2;
+    x264Param->i_bframe_adaptive = X264_B_ADAPT_NONE;
+    x264Param->i_bframe_bias = 0;
+
+    // x264Param->i_log_level = X264_LOG_WARNING; // only show warning log
+    // x264Param->b_deblocking_filter = 0; // disable deblocking filter
 
     // set input frame buffer
     x264_picture_alloc(&inFrame, X264_CSP_I420, width, height);
@@ -53,7 +60,13 @@ X264Encoder::X264Encoder(char *outputPath, int inWidth, int inHeight, int fps) {
 
     // set QP in macroBlock level
     x264Param->rc.i_aq_mode = X264_AQ_VARIANCE;
-    // inFrame.prop.quant_offsets = mbQp;
+    // x264Param->rc.i_qp_constant = 10; // set base qp for P frame.
+    // x264Param->rc.i_rc_method = X264_RC_CQP;
+
+    ret = x264_param_apply_profile(x264Param, x264_profile_names[1]);
+    if (ret < 0) {
+        av_log(nullptr, AV_LOG_ERROR, "Failed to apply main profile!\n");
+    }
 
     encoder = x264_encoder_open(x264Param);
     if(!encoder) {
@@ -94,22 +107,47 @@ X264Encoder::~X264Encoder() {
 // return whether encoding of current frame is successful
 bool X264Encoder::encode(uint8_t **data, const int *linesize) {
     int scaleHeight = sws_scale(sws, data, linesize, 0, height, inFrame.img.plane, inFrame.img.i_stride);
-    if(scaleHeight != height) {
+    if (scaleHeight != height) {
         av_log(nullptr, AV_LOG_ERROR, "Failed to scale frame!\n");
         return false;
     }
 
     int frame_size = x264_encoder_encode(encoder, &nals, &nalCount, &inFrame, &outFrame);
-    if(frame_size < 0){
+    if (frame_size < 0) {
         av_log(nullptr, AV_LOG_ERROR, "Failed to encode frame!\n");
         return false;
     }
+    else if (frame_size == 0) {
+        // need more data
+        return false;
+    }
 
-    if(!fwrite(nals[0].p_payload, sizeof(uint8_t), frame_size, outputFile)){
+    if (!fwrite(nals[0].p_payload, sizeof(uint8_t), frame_size, outputFile)){
         av_log(nullptr, AV_LOG_ERROR, "Failed to write NAL!\n");
         return false;
     }
 
+    return true;
+}
+
+// flush encoder
+bool X264Encoder::flush() {
+    while (true) {
+        int frame_size = x264_encoder_encode(encoder, &nals, &nalCount, nullptr, &outFrame);
+        if (frame_size < 0) {
+            av_log(nullptr, AV_LOG_ERROR, "Failed to encode frame!\n");
+            return false;
+        }
+        else if (frame_size == 0) {
+            // flush finished
+            break;
+        }
+
+        if (!fwrite(nals[0].p_payload, sizeof(uint8_t), frame_size, outputFile)){
+            av_log(nullptr, AV_LOG_ERROR, "Failed to write NAL!\n");
+            break;
+        }
+    }
     return true;
 }
 

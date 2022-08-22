@@ -3,6 +3,9 @@
 #include "encoder.h"
 
 int main(int argc, char **argv) {
+    // suppress info log
+    // av_log_set_level(AV_LOG_ERROR);
+
     Arguments arguments;
     arguments.parseArguments(argc, argv);
 
@@ -25,11 +28,11 @@ int main(int argc, char **argv) {
         // Get decoded frame from decoder
         int res = avcodec_receive_frame(decoder.videoCodecContext, decoder.frame);
         if (res == AVERROR(EAGAIN)) {
-            av_log(nullptr, AV_LOG_INFO, "No data output.\n");
+            // av_log(nullptr, AV_LOG_INFO, "No data output.\n");
             continue;
         }
         else if (res == AVERROR_EOF) {
-            av_log(nullptr, AV_LOG_INFO, "End of file.\n");
+            // av_log(nullptr, AV_LOG_INFO, "End of file.\n");
             continue;
         }
         else if (res < 0) {
@@ -37,7 +40,7 @@ int main(int argc, char **argv) {
             continue;
         }
 
-        av_log(nullptr, AV_LOG_INFO, "Receive and re-encode frame %d with pts %ld. ", ++frameCount,decoder.frame->pts);
+        av_log(nullptr, AV_LOG_INFO, "Receive and re-encode frame %d with type %d and pts %ld. ", ++frameCount, decoder.frame->pict_type, decoder.frame->pts);
         if (encoder.encode(decoder.frame->data, decoder.frame->linesize)) {
             av_log(nullptr, AV_LOG_INFO, "Success.\n");
         } else {
@@ -61,6 +64,9 @@ int main(int argc, char **argv) {
             av_frame_unref(decoder.frame);
         }
     }
+
+    // Flush encoder to encode buffered frames(e.g. B frames)
+    encoder.flush();
 
     return 0;
 }

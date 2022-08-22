@@ -19,6 +19,7 @@ public:
 
     bool setBlockQp(const vector<Regions>& rois, float baseQp);
     bool encode(uint8_t *data[], const int linesize[]);
+    bool flush();
 
     SwsContext *sws;
     x264_t *encoder;
