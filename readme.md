@@ -18,6 +18,7 @@ This library is inspired by [h264-roi](https://github.com/ChaoticEnigma/h264-roi
 ### Dependency
 - FFmpeg 5.0.1 or above
 - x264 latest
+- libraries on which FFmpeg/x264 depend
 
 ### Quick start
 1. Compile FFmpeg and x264 for headers and static/shared library. Note that FFmpeg should be configured to support x264(--enable-libx264)
@@ -47,5 +48,7 @@ Values of QP range from 0 to 51 as usual.
 
 ### Other words
 - You can disable log output by setting log level in function `main`.
-- Note that because of the rate control of x264, the qp settings are not 100% accurate, but the overall effect is good.
+- Note that because of the rate control of x264, the qp settings are not 100% accurate, but the overall effect is good. In fact, uniform qp in one region is not recommended since it conflicts with adaptive quantization of x264.
+- Any input video that has pixel format of yuv420p and is supported by FFmpeg is valid. Other pixel format may be implemented later.
+- Currently the frame resolution of output video is the same as that of input video. Custon resolution option may be implemented later.
 - This is my first time learning and trying C++. Forgive me for any unreasonable code if I've made ;)
