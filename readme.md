@@ -1,7 +1,9 @@
 # h264_qpblock
 
 ### What's this repository for?
-This library allows you to encode regions of interest(ROIs) with multiple QP value, instead of frame-level uniform QP adopted in traditional H264.
+This library allows you to encode regions of interest(ROIs) with multiple target QP value, instead of frame-level uniform QP adopted in traditional CQP H264.
+
+H264 may achieve different qp for macroblocks by adaptive quantization, however sometimes you may not be satisfied with the decision made by encoder, then you can use this library to modify it.
 
 ### What's good point of this repository?
 This library is inspired by [h264-roi](https://github.com/ChaoticEnigma/h264-roi), but with more advantages:
@@ -50,5 +52,5 @@ Values of QP range from 0 to 51 as usual.
 - You can disable log output by setting log level in function `main`.
 - Note that because of the rate control of x264, the qp settings are not 100% accurate, but the overall effect is good. In fact, uniform qp in one region is not recommended since it conflicts with adaptive quantization of x264.
 - Any input video that has pixel format of yuv420p and is supported by FFmpeg is valid. Other pixel format may be implemented later.
-- Currently the frame resolution of output video is the same as that of input video. Custon resolution option may be implemented later.
+- Currently the frame resolution of output video is the same as that of input video. Custom resolution option may be implemented later.
 - This is my first time learning and trying C++. Forgive me for any unreasonable code if I've made ;)
