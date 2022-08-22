@@ -32,7 +32,6 @@ public:
     int width;
     int height;
 
-    // ofstream outputStream;
     FILE *outputFile;
     float *mbQp;  // store qp value for each macroBlock
 };

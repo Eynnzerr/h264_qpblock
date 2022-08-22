@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
     arguments.parseArguments(argc, argv);
 
     H264Decoder decoder = H264Decoder(arguments.inputPath);
-    X264Encoder encoder = X264Encoder(arguments.outputPath, decoder.width, decoder.height, 30);
+    X264Encoder encoder = X264Encoder(arguments.outputPath, decoder.width, decoder.height, arguments.fps);
     encoder.setBlockQp(arguments.rois, arguments.base_qp);
 
     // start to decode and re-encode H264 frames

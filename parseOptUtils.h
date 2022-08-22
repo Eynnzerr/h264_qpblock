@@ -20,6 +20,7 @@ public:
     char *inputPath;
     char *outputPath;
     float base_qp;
+    int fps;
     vector<Regions> rois;
 };
 

@@ -5,7 +5,6 @@ X264Encoder::X264Encoder(char *outputPath, int inWidth, int inHeight, int fps) {
         av_log(nullptr, AV_LOG_INFO, "Invalid parameter for frame w/h and fps. Force to use default value.\n");
         width = 1280;
         height = 720;
-        fps = 30;
     }
     width = inWidth;
     height = inHeight;
@@ -17,22 +16,15 @@ X264Encoder::X264Encoder(char *outputPath, int inWidth, int inHeight, int fps) {
     }
 
     // open writing stream of output file
-    /*outputStream.open(outputPath, ios::out | ios::trunc);
-    if (outputStream.fail()) {
-        av_log(nullptr, AV_LOG_ERROR, "Failed to open output file!\n");
-    }*/
     outputFile = fopen(outputPath, "wb");
     if (!outputFile) {
         av_log(nullptr, AV_LOG_ERROR, "Failed to open output file!\n");
     }
 
     // allocate qp array
-    //mbQp = new float[width*height];
     mbQp = nullptr;
 
     // create and set x264 params
-    // inFrame = nullptr;
-    // outFrame = nullptr;
     nals = nullptr;
     nalCount = 0;
     if (!x264Param) delete x264Param;
@@ -41,14 +33,14 @@ X264Encoder::X264Encoder(char *outputPath, int inWidth, int inHeight, int fps) {
     if (ret < 0) {
         av_log(nullptr, AV_LOG_ERROR, "Failed to set preset parameter!\n");
     }
-    x264Param->i_threads = 1;
+    x264Param->i_threads = 12;
     x264Param->i_width = width;
     x264Param->i_height = height;
     x264Param->i_fps_num = fps;
     x264Param->i_fps_den = 1;
-    x264Param->i_bframe = 3;
+    x264Param->i_bframe = 2;
     x264Param->i_bframe_pyramid = 2;
-    x264Param->i_bframe_adaptive = X264_B_ADAPT_NONE;
+    x264Param->i_bframe_adaptive = X264_B_ADAPT_FAST;
     x264Param->i_bframe_bias = 0;
 
     // x264Param->i_log_level = X264_LOG_WARNING; // only show warning log
@@ -60,8 +52,8 @@ X264Encoder::X264Encoder(char *outputPath, int inWidth, int inHeight, int fps) {
 
     // set QP in macroBlock level
     x264Param->rc.i_aq_mode = X264_AQ_VARIANCE;
-    // x264Param->rc.i_qp_constant = 10; // set base qp for P frame.
-    // x264Param->rc.i_rc_method = X264_RC_CQP;
+    x264Param->rc.i_qp_min = 0;
+    x264Param->rc.i_qp_max = 51;
 
     ret = x264_param_apply_profile(x264Param, x264_profile_names[1]);
     if (ret < 0) {
@@ -90,9 +82,6 @@ X264Encoder::~X264Encoder() {
         x264_encoder_close(encoder);
         encoder = nullptr;
     }
-    /*if (outputStream.is_open()) {
-        outputStream.close();
-    }*/
     if (outputFile) {
         fclose(outputFile);
         outputFile = nullptr;

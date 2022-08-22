@@ -24,6 +24,7 @@ bool Arguments::parseArguments(int argc, char **argv) {
     av_log(nullptr, AV_LOG_INFO, "Output file path: %s\n", outputPath);
 
     this->base_qp = 0;
+    this->fps = 30;
 
     // parse base qp option and region qp options
     for (int i = 3; i < argc; ++i) {
@@ -35,6 +36,11 @@ bool Arguments::parseArguments(int argc, char **argv) {
             this->base_qp = stof(argv[++i]);
             continue;
         }
+        else if (param == "-fps") {
+            this->fps = stoi(argv[++i]);
+            continue;
+        }
+
 
         // find target region in format (x1, y1, x2, y2):qp-value
         size_t pos = param.find(':');
