@@ -11,6 +11,7 @@ This library is inspired by [h264-roi](https://github.com/ChaoticEnigma/h264-roi
 - Input mp4 for output mp4 instead of h264 for h264
 - Fix the bug that will lead to frame loss in [h264-roi](https://github.com/ChaoticEnigma/h264-roi)
 - Fix the bug that relative path will be parsed as absolute path in [h264-roi](https://github.com/ChaoticEnigma/h264-roi)
+- Fix the bug that B frames are not applied
 
 [h264-roi](https://github.com/ChaoticEnigma/h264-roi) is a brilliant work, but the author stopped maintenance long time ago. So this repository is given birth to.
 
@@ -19,7 +20,6 @@ This library is inspired by [h264-roi](https://github.com/ChaoticEnigma/h264-roi
 - x264 latest
 
 ### Quick start
-**Note**: For the sake of time constraint, we temporarily only support linux-x86 platform. Support for other platforms may be implemented later.
 1. Compile FFmpeg and x264 for headers and static/shared library. Note that FFmpeg should be configured to support x264(--enable-libx264)
 2. Create a new empty folder:
 ```shell
@@ -47,4 +47,5 @@ Values of QP range from 0 to 51 as usual.
 
 ### Other words
 - You can disable log output by setting log level in function `main`.
+- Note that because of the rate control of x264, the qp settings are not 100% accurate, but the overall effect is good.
 - This is my first time learning and trying C++. Forgive me for any unreasonable code if I've made ;)
